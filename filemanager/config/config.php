@@ -1,6 +1,7 @@
 <?php
 $version = "9.12.1";
-if (session_id() == '') session_start();
+
+require_once(__DIR__ . DIRECTORY_SEPARATOR . "symfony_instance.php");
 
 mb_internal_encoding('UTF-8');
 mb_http_output('UTF-8');
@@ -29,6 +30,26 @@ setlocale(LC_CTYPE, 'en_US'); //correct transliteration
 |
 */
 
+$default_upload_configuration = array(
+    	'base_url' => ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http"). "://". @$_SERVER['HTTP_HOST'],
+	'upload_dir' => '/source/',
+	'current_path' => '../source/',
+	'thumbs_base_path' => '../thumbs/',
+);
+
+$key_identifier = null;
+if (isset($_GET['akey']) && $_GET['akey'] != "") {
+    
+    $key_identifier = $_GET['akey'];
+    
+    if ($symfony_loaded && sfContext::hasInstance()) {
+        $user = sfContext::getInstance()->getUser();
+        $upload_configuration = unserialize($user->getAttribute($key_identifier, null));
+    } else {
+        $upload_configuration = unserialize($_SESSION[$key_identifier]);
+    }
+}
+
 define('USE_ACCESS_KEYS', false); // TRUE or FALSE
 
 /*
@@ -56,7 +77,7 @@ define('DEBUG_ERROR_MESSAGE', true); // TRUE or FALSE
 */
 
 $config = array(
-
+        "key_identifier" => $key_identifier,
 	/*
 	|--------------------------------------------------------------------------
 	| DON'T TOUCH (base url (only domain) of site).
@@ -65,7 +86,7 @@ $config = array(
 	| without final / (DON'T TOUCH)
 	|
 	*/
-	'base_url' => ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http"). "://". @$_SERVER['HTTP_HOST'],
+	'base_url' => isset($upload_configuration['base_url']) ? $upload_configuration['base_url'] : $default_upload_configuration['base_url'],
 	/*
 	|--------------------------------------------------------------------------
 	| path from base_url to base of upload folder
@@ -74,7 +95,7 @@ $config = array(
 	| with start and final /
 	|
 	*/
-	'upload_dir' => '/source/',
+	'upload_dir' => isset($upload_configuration['upload_dir']) ? $upload_configuration['upload_dir'] : $default_upload_configuration['upload_dir'],
 	/*
 	|--------------------------------------------------------------------------
 	| relative path from filemanager folder to upload folder
@@ -83,7 +104,7 @@ $config = array(
 	| with final /
 	|
 	*/
-	'current_path' => '../source/',
+	'current_path' => isset($upload_configuration['current_path']) ? $upload_configuration['current_path'] : $default_upload_configuration['current_path'],
 
 	/*
 	|--------------------------------------------------------------------------
@@ -94,7 +115,7 @@ $config = array(
 	| DO NOT put inside upload folder
 	|
 	*/
-	'thumbs_base_path' => '../thumbs/',
+	'thumbs_base_path' => isset($upload_configuration['thumbs_base_path']) ? $upload_configuration['thumbs_base_path'] : $default_upload_configuration['thumbs_base_path'],
 
 
 	/*
