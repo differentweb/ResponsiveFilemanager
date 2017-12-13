@@ -3,21 +3,15 @@ elixir.config.sourcemaps = false;
 elixir(function(mix) {
   mix.less(
     [
-      'style.less',
-      //"../../../bower_components/bootstrap/less/bootstrap.less",
-      //"../../../bower_components/bootstrap/less/responsive.less",
-      //"../../../bower_components/bootstrap-lightbox/less/bootstrap-lightbox.less"
+      'main_style.less'
     ],
     'resources/tmp/css/style.css');
-
+    
   mix.styles(
     [
-      "bootstrap.css",
-      "responsive.css",
-      "bootstrap-lightbox.css",
+      "style.css",
       "../../../bower_components/bootstrap-modal/css/bootstrap-modal.css",
-      "../../../bower_components/jQuery-contextMenu/src/jquery.contextMenu.css",
-      "style.css"
+      "../../../bower_components/jQuery-contextMenu/src/jquery.contextMenu.css",      
     ],
     'filemanager/css/style.css',
     'resources/tmp/css'
@@ -80,4 +74,6 @@ elixir(function(mix) {
     );
 
   mix.copy('bower_components/jPlayer', 'filemanager/js/jPlayer/');
+  mix.copy('bower_components/blueimp-file-upload/js/', 'filemanager/js');
+  mix.copy('bower_components/blueimp-file-upload/css/', 'filemanager/css');
 });
